@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { AppDispatch } from "../../app/store";
 import { Copyright } from "../../components";
-import { useDispatch } from "react-redux";
 import { signUp } from "./operation";
 
 import Avatar from "@material-ui/core/Avatar";
@@ -38,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
 
 const SignUp: React.FC = () => {
   const classes = useStyles();
-  const dispatch: AppDispatch = useDispatch();
 
   const [inputUsername, setInputUsername] = useState("");
   const [inputEmail, setInputEmail] = useState("");
@@ -78,7 +75,7 @@ const SignUp: React.FC = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          アカウント作成
+          アカウント登録
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -127,8 +124,8 @@ const SignUp: React.FC = () => {
           </div>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="/signin" variant="body2">
-                既にアカウントをお持ちの場合はこちら
+              <Link href="/login" variant="body2">
+                アカウントをお持ちの場合
               </Link>
             </Grid>
           </Grid>

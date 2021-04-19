@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
-import { signIn } from "./operation";
+import { login } from "./operation";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignIn: React.FC = () => {
+const Login: React.FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 
@@ -70,7 +70,7 @@ const SignIn: React.FC = () => {
   const handleSubmit = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
       e.preventDefault();
-      dispatch(signIn(inputEmail, inputPassword));
+      dispatch(login(inputEmail, inputPassword));
     },
     [inputEmail, inputPassword, dispatch]
   );
@@ -85,7 +85,7 @@ const SignIn: React.FC = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            ログイン
           </Typography>
           <form className={classes.form} noValidate>
             <TextField
@@ -115,18 +115,18 @@ const SignIn: React.FC = () => {
             <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
             <div onClick={handleSubmit}>
               <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
-                Sign In
+                ログイン
               </Button>
             </div>
             <Grid container>
-              <Grid item xs>
+              <Grid item xs={12}>
                 <Link href="/password/reset" variant="body2">
-                  Forgot password?
+                  パスワードを忘れた場合
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid item xs={12}>
                 <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  アカウントをお持ちでない場合
                 </Link>
               </Grid>
             </Grid>
@@ -140,4 +140,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default Login;

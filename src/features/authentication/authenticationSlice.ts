@@ -29,7 +29,7 @@ export const authenticationSlice = createSlice({
   name: "authentication",
   initialState,
   reducers: {
-    signInAction: (state, action) => {
+    loginAction: (state, action) => {
       state.isSignedIn = true;
       state.uid = action.payload.uid;
     },
@@ -41,7 +41,7 @@ export const authenticationSlice = createSlice({
   },
 });
 
-export const { signInAction, signOutAction } = authenticationSlice.actions;
+export const { loginAction, signOutAction } = authenticationSlice.actions;
 
 export const selectIsSignedIn = (state: RootState): UserInitialState["isSignedIn"] => state.user.isSignedIn;
 

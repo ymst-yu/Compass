@@ -80,12 +80,12 @@ const App: React.FC = () => {
               <Grid container spacing={2} justify="center">
                 <Grid item>
                   <Button variant="contained" color="primary" onClick={() => history.push("/signup")}>
-                    Sign up
+                    アカウント登録
                   </Button>
                 </Grid>
                 <Grid item>
                   <Button variant="outlined" color="primary" onClick={() => history.push("/signin")}>
-                    Sign in
+                    ログイン
                   </Button>
                 </Grid>
               </Grid>

@@ -9,7 +9,7 @@ import { Route, Switch, BrowserRouter } from "react-router-dom";
 // import react components
 import Auth from "./Auth";
 import App from "./App";
-import SignIn from "./features/authentication/SignIn";
+import Login from "./features/authentication/Login";
 import SignUp from "./features/authentication/SignUp";
 import PasswordReset from "./features/authentication/PasswordReset";
 import { Home } from "./components";
@@ -20,7 +20,7 @@ ReactDOM.render(
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={App} />
-          <Route exact path="/signin" component={SignIn} />
+          <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/password/reset" component={PasswordReset} />
           <Auth>

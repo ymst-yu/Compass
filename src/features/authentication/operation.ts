@@ -1,10 +1,10 @@
 import { AppDispatch } from "../../app/store";
 import { auth, db, FirebaseTimestamp } from "../../firebaseConfig";
 import { isValidRequiredInput, isValidEmailtFormat } from "../../functions/common";
-import { signInAction, signOutAction } from "./authenticationSlice";
+import { loginAction, signOutAction } from "./authenticationSlice";
 import firebase from "firebase/app";
 
-export interface SignInActionState {
+export interface LoginActionState {
   uid: string;
 }
 
@@ -16,7 +16,7 @@ export interface SignUpUserState {
   created_at: firebase.firestore.Timestamp;
 }
 
-export interface SignInUserState {
+export interface LoginUserState {
   updated_at: firebase.firestore.Timestamp;
 }
 
@@ -27,10 +27,10 @@ export const listenAuthState = () => {
   return async (dispatch: AppDispatch) => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const signInActionState: SignInActionState = {
+        const loginActionState: LoginActionState = {
           uid: user.uid,
         };
-        dispatch(signInAction(signInActionState));
+        dispatch(loginAction(loginActionState));
       } else {
         window.location.href = "/";
       }
@@ -92,9 +92,9 @@ export const signUp = (username: string, email: string, password: string): boole
 };
 
 /** ==============
- * Sign in
+ * Login
  =============== */
-export const signIn = (email: string, password: string) => {
+export const login = (email: string, password: string) => {
   return async (): Promise<boolean | void> => {
     if (!isValidRequiredInput(email, password)) {
       alert("メールアドレスまたはパスワードが正しくありません。");
@@ -105,7 +105,7 @@ export const signIn = (email: string, password: string) => {
       if (user) {
         const uid = user.uid;
         const timestamp = FirebaseTimestamp.now();
-        const signInUserData: SignInUserState = {
+        const signInUserData: LoginUserState = {
           updated_at: timestamp,
         };
         await db.collection("users").doc(uid).set(signInUserData, { merge: true });
