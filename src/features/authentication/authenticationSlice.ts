@@ -9,8 +9,6 @@ export interface UserInitialState {
   role: string;
   created_at: string;
   updated_at: string;
-  memos: string[];
-  todos: string[];
 }
 
 const initialState: UserInitialState = {
@@ -21,8 +19,6 @@ const initialState: UserInitialState = {
   role: "",
   created_at: "",
   updated_at: "",
-  memos: [],
-  todos: [],
 };
 
 export const authenticationSlice = createSlice({
