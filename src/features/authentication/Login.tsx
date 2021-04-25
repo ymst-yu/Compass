@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { FC, useState, useCallback } from "react";
 import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
 import { login } from "./operation";
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login: React.FC = () => {
+const Login: FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 

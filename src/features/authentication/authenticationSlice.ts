@@ -9,8 +9,6 @@ export interface UserInitialState {
   role: string;
   created_at: string;
   updated_at: string;
-  memos: string[];
-  todos: string[];
 }
 
 const initialState: UserInitialState = {
@@ -21,8 +19,6 @@ const initialState: UserInitialState = {
   role: "",
   created_at: "",
   updated_at: "",
-  memos: [],
-  todos: [],
 };
 
 export const authenticationSlice = createSlice({
@@ -32,6 +28,11 @@ export const authenticationSlice = createSlice({
     loginAction: (state, action) => {
       state.isSignedIn = true;
       state.uid = action.payload.uid;
+      state.username = action.payload.username;
+      state.email = action.payload.email;
+      state.role = action.payload.role;
+      state.created_at = action.payload.created_at;
+      state.updated_at = action.payload.updated_at;
     },
     signOutAction: () => {
       return {

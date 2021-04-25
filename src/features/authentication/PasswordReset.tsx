@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { FC, useState, useCallback } from "react";
 import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
 import { passwordReset } from "./operation";
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PasswordReset: React.FC = () => {
+const PasswordReset: FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 

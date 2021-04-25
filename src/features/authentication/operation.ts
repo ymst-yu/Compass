@@ -6,6 +6,11 @@ import firebase from "firebase/app";
 
 export interface LoginActionState {
   uid: string;
+  username: string;
+  email: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SignUpUserState {
@@ -27,10 +32,25 @@ export const listenAuthState = () => {
   return async (dispatch: AppDispatch) => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const loginActionState: LoginActionState = {
-          uid: user.uid,
-        };
-        dispatch(loginAction(loginActionState));
+        const uid = user.uid;
+        db.collection("users")
+          .doc(uid)
+          .get()
+          .then((snapshot) => {
+            const data = snapshot.data();
+            if (data) {
+              const { username, email, role, created_at, updated_at } = data;
+              const loginActionState: LoginActionState = {
+                uid: uid,
+                username: username,
+                email: email,
+                role: role,
+                created_at: created_at.toDate().toString(),
+                updated_at: updated_at.toDate().toString(),
+              };
+              dispatch(loginAction(loginActionState));
+            }
+          });
       } else {
         window.location.href = "/";
       }
@@ -75,7 +95,7 @@ export const signUp = (username: string, email: string, password: string): boole
             window.location.href = "/home";
           })
           .catch((error) => {
-            alert("アカウントの作成に失敗しました。お手数ですが、お時間を置いてから再度お試しください。");
+            alert("アカウントの作成に失敗しました。お手数ですが、時間を置いてから再度お試しください。");
             console.log(error);
           });
       }
@@ -85,7 +105,7 @@ export const signUp = (username: string, email: string, password: string): boole
         alert("既に使用されているメールアドレスです。恐れ入りますが、別のメールアドレスでお試しください。");
         console.log(error);
       } else {
-        alert("アカウントの作成に失敗しました。お手数ですが、お時間を置いてから再度お試しください。");
+        alert("アカウントの作成に失敗しました。お手数ですが、時間を置いてから再度お試しください。");
         console.log(error);
       }
     });

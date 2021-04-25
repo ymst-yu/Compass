@@ -1,3 +1,17 @@
+/* ======================
+ * ランダムな文字列を生成する
+======================= */
+export const generateRandomString = () => {
+  const S = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const N = 32;
+  const randomString =
+    new Date().getTime().toString(16) +
+    Array.from(crypto.getRandomValues(new Uint32Array(N)))
+      .map((n) => S[n % S.length])
+      .join("");
+  return randomString;
+};
+
 /** ==============================
  * 空文字が入力されていないかチェック
  =============================== */

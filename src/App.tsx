@@ -84,7 +84,7 @@ const App: React.FC = () => {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Button variant="outlined" color="primary" onClick={() => history.push("/signin")}>
+                  <Button variant="outlined" color="primary" onClick={() => history.push("/login")}>
                     ログイン
                   </Button>
                 </Grid>
