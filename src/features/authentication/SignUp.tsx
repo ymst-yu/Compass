@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { FC, useState, useCallback } from "react";
 import { Copyright } from "../../components";
 import { signUp } from "./operation";
 
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp: React.FC = () => {
+const SignUp: FC = () => {
   const classes = useStyles();
 
   const [inputUsername, setInputUsername] = useState("");

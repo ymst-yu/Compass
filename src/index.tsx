@@ -12,6 +12,7 @@ import App from "./App";
 import Login from "./features/authentication/Login";
 import SignUp from "./features/authentication/SignUp";
 import PasswordReset from "./features/authentication/PasswordReset";
+import Memo from "./features/memo/Memo";
 import { Home } from "./components";
 
 ReactDOM.render(
@@ -25,7 +26,7 @@ ReactDOM.render(
           <Route exact path="/password/reset" component={PasswordReset} />
           <Auth>
             <Route exact path="/home" component={Home} />
-            {/* <Route exact path='/memo' component={Memo} /> */}
+            <Route exact path="/memo" component={Memo} />
           </Auth>
         </Switch>
       </BrowserRouter>
