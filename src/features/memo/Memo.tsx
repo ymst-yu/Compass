@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback } from "react";
+import React, { FC, memo, useState, useCallback } from "react";
 import { createMemo } from "./operation";
 import { TextField } from "@material-ui/core";
 import { generateRandomString } from "../../functions/common";
@@ -37,11 +37,13 @@ const Memo: FC = () => {
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       const sendData = {
+        id: generateRandomString(),
         title: inputTitle,
         texts: inputTexts,
         tags: ["business", "money", "health"], // 選択したタグが格納されるように機能追加する
       };
       createMemo(sendData);
+      setInputTexts([]);
       console.log("data: ", sendData);
     },
     [inputTexts, inputTitle]

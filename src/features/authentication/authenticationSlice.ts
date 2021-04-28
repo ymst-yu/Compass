@@ -8,7 +8,7 @@ export interface UserInitialState {
   email: string;
   role: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 const initialState: UserInitialState = {

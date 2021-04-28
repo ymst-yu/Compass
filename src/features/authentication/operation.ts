@@ -9,16 +9,8 @@ export interface LoginActionState {
   username: string;
   email: string;
   role: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SignUpUserState {
-  uid: string;
-  username: string;
-  email: string;
-  role: string;
   created_at: firebase.firestore.Timestamp;
+  updated_at: firebase.firestore.Timestamp;
 }
 
 export interface LoginUserState {
@@ -79,12 +71,13 @@ export const signUp = (username: string, email: string, password: string): boole
       if (user) {
         const uid = user.uid;
         const timestamp = FirebaseTimestamp.now();
-        const signUpUserData: SignUpUserState = {
+        const signUpUserData: LoginActionState = {
           uid: uid,
           username: username,
           email: email,
           role: "user",
           created_at: timestamp,
+          updated_at: timestamp,
         };
 
         db.collection("users")
@@ -174,75 +167,3 @@ export const passwordReset = (email: string) => {
       });
   };
 };
-
-/** ===================
- * Listen Auth State
- ==================== */
-// export const listenAuthState = () => {
-//   return async (dispatch: AppDispatch) => {
-//     auth.onAuthStateChanged((user) => {
-//       // auth から現在ログインしているユーザーを取得
-//       if (user) {
-//         // Firestore から該当のユーザー情報を取得する
-//         db.collection("users")
-//           .doc(user.uid)
-//           .get()
-//           .then((snapshot) => {
-//             const data = snapshot.data();
-//             if (!data) {
-//               throw new Error("ユーザーデータが存在しません。");
-//             }
-//             // 取得した情報からstate更新用のオブジェクトを作成
-//             const signInActionData: SignInActionState = {
-//               isSignedIn: true,
-//               uid: user.uid,
-//               username: data.username,
-//               role: data.role,
-//             };
-//             // stateを更新
-//             dispatch(signInAction(signInActionData));
-//           });
-//       } else {
-//         window.location.href = "/";
-//       }
-//     });
-//   };
-// };
-
-/** ==============
- * Sign in
- =============== */
-// export const signIn = (email: string, password: string) => {
-//   return async (dispatch: AppDispatch): Promise<boolean | void> => {
-//     if (!isValidRequiredInput(email, password)) {
-//       alert("メールアドレスまたはパスワードが正しくありません。");
-//       return false;
-//     }
-//     auth.signInWithEmailAndPassword(email, password).then((res) => {
-//       const user = res.user;
-//       if (user) {
-//         const uid = user.uid;
-//         const timestamp = FirebaseTimestamp.now();
-//         db.collection("users")
-//           .doc(uid)
-//           .get()
-//           .then(async (snapshot) => {
-//             const data = snapshot.data();
-//             if (!data) {
-//               throw new Error("ユーザーデータが存在しません。");
-//             }
-//             const signInUserData: SignInUserState = {
-//               uid: uid,
-//               username: data.username,
-//               email: data.email,
-//               role: data.role,
-//               updated_at: timestamp.toDate().toString(),
-//             };
-//             await dispatch(signInAction(signInUserData));
-//             alert("ログインに成功しました。");
-//             window.location.href = "/home";
-//           });
-//       }
-//     });
-//   };
-// };

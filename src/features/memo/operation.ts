@@ -1,6 +1,7 @@
 import { auth, db, FirebaseTimestamp } from "../../firebaseConfig";
 
 interface inputNewMemoState {
+  id: string;
   title: string;
   texts: {
     id: string;
@@ -16,10 +17,12 @@ export const createMemo = async (inputNewMemo: inputNewMemoState): Promise<void>
   try {
     const user = await auth.currentUser;
     if (user) {
-      const { title, texts, tags } = inputNewMemo;
+      const { id, title, texts, tags } = inputNewMemo;
       const uid = user.uid;
+      const memoId = id;
       const timestamp = FirebaseTimestamp.now();
       const newMemo = {
+        id: memoId,
         created_at: timestamp,
         title: title,
         texts: texts,

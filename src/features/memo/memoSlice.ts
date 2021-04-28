@@ -1,19 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { db } from "../../firebaseConfig";
-
-interface MemoState {
-  created_at: string;
-  title: string;
-  texts: {
-    id: string;
-    text: string;
-  }[];
-  tags: string[];
-}
+import { auth, db } from "../../firebaseConfig";
 
 interface InitialState {
-  list: MemoState[];
+  list: {
+    id: string;
+    created_at: string;
+    title: string;
+    texts: {
+      id: string;
+      text: string;
+    }[];
+    tags: string[];
+  }[];
   isTimerStart: boolean;
   isTagMenuOpen: boolean;
   isCreateTagMenuOpen: boolean;
@@ -27,7 +26,10 @@ const initialState: InitialState = {
 };
 
 export const fetchAllMemos = createAsyncThunk("memo/fetchAllMemos", async () => {
-  const snapshot = await db.collectionGroup("memos").orderBy("created_at", "desc").get();
+  const user = await auth.currentUser;
+  const uid = user?.uid;
+  console.log("uid: ", uid);
+  const snapshot = await db.collection("users").doc(uid).collection("memos").orderBy("created_at", "desc").get();
   const allMemos = snapshot.docs.map((doc) => ({
     created_at: doc.data().created_at.toDate().toString(),
     id: doc.data().id,
