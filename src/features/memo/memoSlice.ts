@@ -28,7 +28,6 @@ const initialState: InitialState = {
 export const fetchAllMemos = createAsyncThunk("memo/fetchAllMemos", async () => {
   const user = await auth.currentUser;
   const uid = user?.uid;
-  console.log("uid: ", uid);
   const snapshot = await db.collection("users").doc(uid).collection("memos").orderBy("created_at", "desc").get();
   const allMemos = snapshot.docs.map((doc) => ({
     created_at: doc.data().created_at.toDate().toString(),

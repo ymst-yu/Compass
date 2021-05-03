@@ -1,7 +1,7 @@
-import React, { FC, memo, useState, useCallback } from "react";
-import { createMemo } from "./operation";
+import React, { FC, useState, useCallback } from "react";
+import { createMemo } from "../../../features/memo/operation";
 import { TextField } from "@material-ui/core";
-import { generateRandomString } from "../../functions/common";
+import { generateRandomString } from "../../../functions/common";
 
 const Memo: FC = () => {
   const [inputTitle, setInputTitle] = useState("");

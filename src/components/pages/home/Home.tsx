@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { AppDispatch } from "../../app/store";
-import { signOut } from "../../features/authentication/operation";
-import { selectIsSignedIn } from "../../features/authentication/authenticationSlice";
-import { selectMemos, fetchAllMemos } from "../../features/memo/memoSlice";
+import { AppDispatch } from "../../../app/store";
+import { signOut } from "../../../features/authentication/operation";
+import { selectIsSignedIn } from "../../../features/authentication/authenticationSlice";
+import { selectMemos, fetchAllMemos } from "../../../features/memo/memoSlice";
 
 const Home: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();

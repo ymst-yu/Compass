@@ -1,12 +1,14 @@
 import React, { FC, useState, useCallback } from "react";
-import { AppDispatch } from "../../app/store";
+import { AppDispatch } from "../../../app/store";
 import { useDispatch } from "react-redux";
-import { passwordReset } from "./operation";
+import { login } from "../../../features/authentication/operation";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
@@ -14,7 +16,7 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import { Copyright } from "../../components";
+import { Copyright } from "../../organisms";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,11 +48,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PasswordReset: FC = () => {
+const Login: FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 
   const [inputEmail, setInputEmail] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
 
   const handleChangeEmail = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,14 +61,18 @@ const PasswordReset: FC = () => {
     },
     [setInputEmail]
   );
+  const handleChangePassword = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputPassword(e.target.value);
+    },
+    [setInputPassword]
+  );
   const handleSubmit = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
       e.preventDefault();
-      dispatch(passwordReset(inputEmail)).then(() => {
-        setInputEmail("");
-      });
+      dispatch(login(inputEmail, inputPassword));
     },
-    [inputEmail, dispatch]
+    [inputEmail, inputPassword, dispatch]
   );
 
   return (
@@ -78,17 +85,11 @@ const PasswordReset: FC = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            パスワードのリセット
+            ログイン
           </Typography>
-          <Box mt={2}>
-            <Typography component="h1" variant="body1">
-              パスワードのリセットメールを送信します。
-            </Typography>
-          </Box>
           <form className={classes.form} noValidate>
             <TextField
               onChange={handleChangeEmail}
-              value={inputEmail}
               variant="outlined"
               margin="normal"
               required
@@ -99,19 +100,37 @@ const PasswordReset: FC = () => {
               autoComplete="email"
               autoFocus
             />
+            <TextField
+              onChange={handleChangePassword}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="パスワード"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
             <div onClick={handleSubmit}>
               <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
-                送信
+                ログイン
               </Button>
             </div>
-            <Grid container justify="flex-end">
-              <Grid item>
+            <Grid container>
+              <Grid item xs={12}>
+                <Link href="/password/reset" variant="body2">
+                  パスワードを忘れた場合
+                </Link>
+              </Grid>
+              <Grid item xs={12}>
                 <Link href="/signup" variant="body2">
-                  ホームに戻る
+                  アカウントをお持ちでない場合
                 </Link>
               </Grid>
             </Grid>
-            <Box mt={4}>
+            <Box mt={5}>
               <Copyright />
             </Box>
           </form>
@@ -121,4 +140,4 @@ const PasswordReset: FC = () => {
   );
 };
 
-export default PasswordReset;
+export default Login;
