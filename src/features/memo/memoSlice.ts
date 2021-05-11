@@ -58,7 +58,7 @@ export const memoSlice = createSlice({
 });
 
 // Actions
-export const { setMemoList, setTitle, startTimer, countDown, resetCount } = memoSlice.actions;
+export const { setMemoList, setTitle, setText, startTimer, countDown, resetCount } = memoSlice.actions;
 
 // Selectors
 export const selectMemos = (state: RootState): InitialState["list"] => state.memo.list;

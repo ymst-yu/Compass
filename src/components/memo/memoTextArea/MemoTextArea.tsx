@@ -1,28 +1,54 @@
 import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/store";
-import { selectCountDownTimer } from "../../../features/memo/memoSlice";
+import { selectCountDownTimer, selectMemo, setText } from "../../../features/memo/memoSlice";
+import { generateRandomString } from "../../../functions/common";
 
 const MemoTextArea: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [inputText, setInputText] = useState("");
   const timer = useSelector(selectCountDownTimer);
+  const memo = useSelector(selectMemo);
   const isStart = timer.isStart;
+  const title = memo.title;
+  const texts = memo.texts;
 
-  // 処理の流れ
-  // 1) React側は入力欄を弾として、関数を発火すると入力欄が追加されていく形にする
-  // 2) 追加された入力欄で入力し、Enter(or Buttonクリック)でstoreに保管される仕組みを作る
+  const [inputText, setInputText] = useState("");
 
-  const TextField = (
-    <li>
-      <input type="text" />
-      <button>+</button>
-    </li>
+  const handleChangeText = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!isStart) return;
+      setInputText(e.target.value);
+    },
+    [isStart]
   );
+
+  const setTextToState = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const newText = {
+      id: generateRandomString(),
+      text: inputText,
+    };
+    dispatch(setText(newText));
+    setInputText("");
+  };
 
   return (
     <div>
-      <ul>{TextField}</ul>
+      {title && (
+        <>
+          <ul>
+            {texts.map((text) => (
+              <li key={text.id}>{text.text}</li>
+            ))}
+          </ul>
+          {isStart && (
+            <form onSubmit={setTextToState}>
+              <input type="text" placeholder="テキスト入力" onChange={handleChangeText} value={inputText} autoFocus />
+              <button>+</button>
+            </form>
+          )}
+        </>
+      )}
     </div>
   );
 };

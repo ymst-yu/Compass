@@ -11,7 +11,9 @@ const MemoTitle: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const memo = useSelector(selectMemo);
   const title = memo.title;
+
   const [inputTitle, setInputTitle] = useState("");
+
   const handleChangeTitle = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setInputTitle(e.target.value);
   }, []);
