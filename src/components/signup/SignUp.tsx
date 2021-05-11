@@ -1,12 +1,12 @@
-import React, { FC } from "react";
-import { Copyright, EmailAuthenticationModal } from "../../organisms";
+import React from "react";
+import { Copyright } from "../UIKit";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle, faTwitter, faFacebook } from "@fortawesome/free-brands-svg-icons";
 
 // Materual-UI
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -34,12 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp: FC = () => {
+const SignUp: React.FC = () => {
   const classes = useStyles();
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -55,22 +54,22 @@ const SignUp: FC = () => {
         <Box mb={2}>
           <Grid container justify="center" spacing={2}>
             <Grid item xs={12}>
-              <Button variant="contained" color="primary" fullWidth>
+              <Button variant="contained" color="primary" fullWidth href="/signup/email">
                 メールアドレスで登録
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" color="primary" fullWidth>
+              <Button variant="outlined" fullWidth startIcon={<FontAwesomeIcon icon={faGoogle} />}>
                 Google
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" color="primary" fullWidth>
+              <Button variant="outlined" fullWidth startIcon={<FontAwesomeIcon icon={faTwitter} />}>
                 Twitter
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" color="primary" fullWidth>
+              <Button variant="outlined" fullWidth startIcon={<FontAwesomeIcon icon={faFacebook} />}>
                 Facebook
               </Button>
             </Grid>
@@ -83,7 +82,6 @@ const SignUp: FC = () => {
       <Box mt={5}>
         <Copyright />
       </Box>
-      <EmailAuthenticationModal />
     </Container>
   );
 };

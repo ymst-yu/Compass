@@ -1,8 +1,11 @@
-import React, { FC, useState, useCallback } from "react";
-import { AppDispatch } from "../../../app/store";
+import React, { useState, useCallback } from "react";
+import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
-import { login } from "../../../features/authentication/operation";
+import { login } from "../../features/authentication/operation";
+import { Copyright } from "../UIKit";
 
+// Material-UI
+import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,8 +18,6 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import { Copyright } from "../../organisms";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login: FC = () => {
+const Login: React.FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 

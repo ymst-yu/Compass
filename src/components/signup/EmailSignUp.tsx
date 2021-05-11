@@ -1,6 +1,6 @@
-import React, { FC, useState, useCallback } from "react";
-import { Copyright } from "../../organisms";
-import { signUp } from "../../../features/authentication/operation";
+import React, { useState, useCallback } from "react";
+import { Copyright } from "../UIKit";
+import { signUp } from "../../features/authentication/operation";
 
 // Materual-UI
 import { makeStyles } from "@material-ui/core/styles";
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp: FC = () => {
+const SignUp: React.FC = () => {
   const classes = useStyles();
 
   // state
@@ -89,10 +89,10 @@ const SignUp: FC = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          アカウントの仮登録
+          アカウントの作成
         </Typography>
         <Typography component="p" variant="body2" color="textSecondary">
-          メールアドレスが本人のものか確認メールを送信します。
+          アカウントはメールアドレスの認証完了後に作成されます。
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -160,9 +160,14 @@ const SignUp: FC = () => {
             </Button>
           </div>
           <Grid container justify="flex-end">
-            <Grid item>
+            <Grid item xs={12}>
               <Link href="/login" variant="body2">
                 既にアカウントをお持ちの場合はこちらからログイン
+              </Link>
+            </Grid>
+            <Grid item xs={12}>
+              <Link href="/signup" variant="body2">
+                戻る
               </Link>
             </Grid>
           </Grid>

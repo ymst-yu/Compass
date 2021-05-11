@@ -1,6 +1,6 @@
 import React, { FC, useState, useCallback } from "react";
-import { Copyright } from "../../organisms";
-import { signUp } from "../../../features/authentication/operation";
+import { Copyright } from "../UIKit";
+import { signUp } from "../../features/authentication/operation";
 
 // Materual-UI
 import { makeStyles } from "@material-ui/core/styles";

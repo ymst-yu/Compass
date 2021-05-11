@@ -1,30 +1,30 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { AppDispatch } from "../../../app/store";
-import { signOut } from "../../../features/authentication/operation";
-import { selectIsSignedIn } from "../../../features/authentication/authenticationSlice";
-import { selectMemos, fetchAllMemos } from "../../../features/memo/memoSlice";
+import { AppDispatch } from "../../app/store";
+import { logout } from "../../features/authentication/operation";
+import { selectIsSignedIn, selectUid } from "../../features/authentication/authenticationSlice";
+import { fetchAllMemos } from "../../features/memo/operation";
 
 const Home: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const history = useHistory();
-  const memos = useSelector(selectMemos);
   const isSignedIn = useSelector(selectIsSignedIn);
+  const uid = useSelector(selectUid);
 
   useEffect(() => {
     if (isSignedIn) {
-      dispatch(fetchAllMemos());
+      dispatch(fetchAllMemos(uid));
     }
-  }, [dispatch, isSignedIn]);
+  }, [dispatch, isSignedIn, uid]);
 
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => dispatch(signOut())}>Sign out</button>
+      <button onClick={() => dispatch(logout())}>Sign out</button>
       <button onClick={() => history.push("/memo")}>メモ作成</button>
       <ul>
-        {memos.map((memo) => (
+        {/* {list.map((memo) => (
           <li key={memo.id}>
             <h2>{memo.title}</h2>
             <ul>
@@ -33,7 +33,7 @@ const Home: React.FC = () => {
               ))}
             </ul>
           </li>
-        ))}
+        ))} */}
       </ul>
     </div>
   );

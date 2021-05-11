@@ -1,7 +1,7 @@
-import React, { FC, useState, useCallback } from "react";
-import { AppDispatch } from "../../../app/store";
+import React, { useState, useCallback } from "react";
+import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
-import { passwordReset } from "../../../features/authentication/operation";
+import { resetPassword } from "../../features/authentication/operation";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -14,7 +14,7 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import { Copyright } from "../../organisms";
+import { Copyright } from "../UIKit";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PasswordReset: FC = () => {
+const PasswordReset: React.FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
 
@@ -61,7 +61,7 @@ const PasswordReset: FC = () => {
   const handleSubmit = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
       e.preventDefault();
-      dispatch(passwordReset(inputEmail)).then(() => {
+      dispatch(resetPassword(inputEmail)).then(() => {
         setInputEmail("");
       });
     },
