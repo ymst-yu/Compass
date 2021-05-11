@@ -9,10 +9,23 @@ import { Route, Switch, BrowserRouter } from "react-router-dom";
 // import react components
 import Auth from "./Auth";
 import App from "./App";
-import Login from "./features/authentication/Login";
-import SignUp from "./features/authentication/SignUp";
-import PasswordReset from "./features/authentication/PasswordReset";
-import { Home } from "./components";
+// import {
+//   EmailSignUp,
+//   Login,
+//   ResetPassword,
+//   Home,
+//   Memo,
+//   EmailRegistration,
+//   EmailAuthentication,
+// } from "./components/pages";
+import SignUp from "./components/signup/SignUp";
+import EmailSignUp from "./components/signup/EmailSignUp";
+import Login from "./components/login/Login";
+import PasswordReset from "./components/password_reset/PasswordReset";
+import Home from "./components/home/Home";
+import Memo from "./components/memo/Memo";
+import EmailAuthentication from "./components/email_authentication/EmailAuthentication";
+import EmailRegistration from "./components/email_registration/EmailRegistration";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,10 +35,13 @@ ReactDOM.render(
           <Route exact path="/" component={App} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
+          <Route exact path="/signup/email" component={EmailSignUp} />
           <Route exact path="/password/reset" component={PasswordReset} />
+          <Route exact path="/authentication/email" component={EmailAuthentication} />
           <Auth>
+            <Route exact path="/signup/email/registration" component={EmailRegistration} />
             <Route exact path="/home" component={Home} />
-            {/* <Route exact path='/memo' component={Memo} /> */}
+            <Route exact path="/memo" component={Memo} />
           </Auth>
         </Switch>
       </BrowserRouter>

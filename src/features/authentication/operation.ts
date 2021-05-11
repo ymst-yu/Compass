@@ -1,48 +1,41 @@
+/** 関数一覧
+ * 認証状態を取得
+ * 認証メールを送信
+ * サインアップ
+ * ログイン
+ * ログアウト
+ * パスワードリセット
+ */
+
 import { AppDispatch } from "../../app/store";
 import { auth, db, FirebaseTimestamp } from "../../firebaseConfig";
 import { isValidRequiredInput, isValidEmailtFormat } from "../../functions/common";
-import { loginAction, signOutAction } from "./authenticationSlice";
-import firebase from "firebase/app";
+import { logoutAction } from "./authenticationSlice";
+import { setLoggingInState, sendEmailVerification } from "./util";
+import { LoginUserData } from "./types";
 
-export interface LoginActionState {
-  uid: string;
-}
-
-export interface SignUpUserState {
-  uid: string;
-  username: string;
-  email: string;
-  role: string;
-  created_at: firebase.firestore.Timestamp;
-}
-
-export interface LoginUserState {
-  updated_at: firebase.firestore.Timestamp;
-}
-
-/** ===================
- * Listen Auth State
- ==================== */
+// ===================================================================
+// 現在のログイン状態を取得し、
+// その状態に応じてログインが必要なサービスの利用を許可するか・しないか決定する
 export const listenAuthState = () => {
-  return async (dispatch: AppDispatch) => {
+  return async (dispatch: AppDispatch): Promise<void> => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const loginActionState: LoginActionState = {
-          uid: user.uid,
-        };
-        dispatch(loginAction(loginActionState));
+        // ログイン中のユーザー情報をstateにセットする（全てのサービスが利用できる）
+        const uid = user.uid;
+        dispatch(setLoggingInState(uid));
       } else {
+        // ホーム画面に強制的に遷移させる（ログインが必要なサービスは利用できない）
         window.location.href = "/";
       }
     });
   };
 };
 
-/** ===========
- * Sign up
-============= */
-export const signUp = (username: string, email: string, password: string): boolean | void => {
-  // validation
+// ===================================================================
+// サインアップ
+export const signUp = async (username: string, email: string, password: string): Promise<boolean | void> => {
+  // 入力値のチェック
   if (!isValidRequiredInput(username, email, password)) {
     alert("未入力の項目があります。");
     return false;
@@ -51,80 +44,100 @@ export const signUp = (username: string, email: string, password: string): boole
     alert("メールアドレスの形式が正しくありません。");
     return false;
   }
+  if (password.length < 8) {
+    alert("パスワードは８文字以上で設定してください。"); // TODO:半角英数字も含むバリデーションを設置する
+    return false;
+  }
+  // メールアドレスの登録状況の確認
+  const isUsedEmail = await auth.fetchSignInMethodsForEmail(email).then((res) => res.length);
+  if (isUsedEmail > 0) {
+    alert("既に使用されているメールアドレスです。恐れ入りますが、別のメールアドレスをご利用ください。");
+    return false;
+  }
 
   auth
     .createUserWithEmailAndPassword(email, password)
-    .then((res) => {
-      const user = res.user;
-      if (user) {
-        const uid = user.uid;
-        const timestamp = FirebaseTimestamp.now();
-        const signUpUserData: SignUpUserState = {
-          uid: uid,
-          username: username,
-          email: email,
-          role: "user",
-          created_at: timestamp,
-        };
+    .then((result) => {
+      // アカウントの作成に成功
+      const currentUser = result.user;
+      if (currentUser) {
+        // 認証メールを送信
+        sendEmailVerification().then(() => {
+          const uid = currentUser.uid;
+          const userRef = db.collection("users").doc(uid);
 
-        db.collection("users")
-          .doc(uid)
-          .set(signUpUserData)
-          .then(() => {
-            alert("アカウントが作成されました。");
-            window.location.href = "/home";
-          })
-          .catch((error) => {
-            alert("アカウントの作成に失敗しました。お手数ですが、お時間を置いてから再度お試しください。");
-            console.log(error);
-          });
+          // firestoreに新規ユーザーデータを登録
+          // （1度でも認証メールを送信している場合はユーザーデータが作成されているため、この処理は実行されない）
+          userRef
+            .get()
+            .then((doc) => {
+              // doc(uid)が存在しない場合
+              if (!doc.exists) {
+                const timestamp = FirebaseTimestamp.now();
+                // ユーザーデータを作成
+                const userData: LoginUserData = {
+                  uid: uid,
+                  username: username,
+                  email: email,
+                  role: "user",
+                  created_at: timestamp,
+                  updated_at: timestamp,
+                };
+                userRef.set(userData).then(() => {
+                  // この時点ではメールアドレスの所有権が確認されていないため、
+                  // 強制的にサインアウトさせる（サービスの利用はできない）
+                  auth.signOut();
+                });
+              }
+            })
+            .catch((error) => {
+              // doc取得の処理でエラー
+              console.log("Firebase Error errorCode: ", error.code);
+              console.log("Firebase Error errorMessage: ", error.message);
+              alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
+            });
+        });
       }
     })
     .catch((error) => {
-      if (error.code === "auth/email-already-in-use") {
-        alert("既に使用されているメールアドレスです。恐れ入りますが、別のメールアドレスでお試しください。");
-        console.log(error);
-      } else {
-        alert("アカウントの作成に失敗しました。お手数ですが、お時間を置いてから再度お試しください。");
-        console.log(error);
-      }
+      // アカウント作成の処理でエラー
+      console.log("Firebase Error errorCode: ", error.code);
+      console.log("Firebase Error errorMessage: ", error.message);
+      alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
     });
 };
 
-/** ==============
- * Login
- =============== */
+// ===================================================================
+// ログイン
 export const login = (email: string, password: string) => {
-  return async (): Promise<boolean | void> => {
+  return async (dispatch: AppDispatch): Promise<boolean | void> => {
     if (!isValidRequiredInput(email, password)) {
       alert("メールアドレスまたはパスワードが正しくありません。");
       return false;
     }
     auth.signInWithEmailAndPassword(email, password).then(async (res) => {
       const user = res.user;
-      if (user) {
+      if (user && user.emailVerified) {
         const uid = user.uid;
-        const timestamp = FirebaseTimestamp.now();
-        const signInUserData: LoginUserState = {
-          updated_at: timestamp,
-        };
-        await db.collection("users").doc(uid).set(signInUserData, { merge: true });
-        alert("ログインに成功しました。");
+        await dispatch(setLoggingInState(uid));
         window.location.href = "/home";
+        alert("ログインに成功しました");
+      } else {
+        // メールアドレスの認証が済んでいない場合は認証ページへ遷移させる
+        window.location.href = "/authentication/email";
       }
     });
   };
 };
 
-/** ==============
- * Sign out
- =============== */
-export const signOut = () => {
+// ===================================================================
+// ログアウト
+export const logout = () => {
   return async (dispatch: AppDispatch): Promise<void> => {
     auth
       .signOut()
       .then(async () => {
-        await dispatch(signOutAction());
+        await dispatch(logoutAction());
         alert("ログアウトしました。");
       })
       .catch((error) => {
@@ -134,10 +147,9 @@ export const signOut = () => {
   };
 };
 
-/** ==============
- * Password reset
- ================ */
-export const passwordReset = (email: string) => {
+// ===================================================================
+// パスワードリセット
+export const resetPassword = (email: string) => {
   return async (): Promise<boolean | void> => {
     if (!isValidEmailtFormat(email)) {
       alert("メールアドレスが正しくありません。");
@@ -154,75 +166,3 @@ export const passwordReset = (email: string) => {
       });
   };
 };
-
-/** ===================
- * Listen Auth State
- ==================== */
-// export const listenAuthState = () => {
-//   return async (dispatch: AppDispatch) => {
-//     auth.onAuthStateChanged((user) => {
-//       // auth から現在ログインしているユーザーを取得
-//       if (user) {
-//         // Firestore から該当のユーザー情報を取得する
-//         db.collection("users")
-//           .doc(user.uid)
-//           .get()
-//           .then((snapshot) => {
-//             const data = snapshot.data();
-//             if (!data) {
-//               throw new Error("ユーザーデータが存在しません。");
-//             }
-//             // 取得した情報からstate更新用のオブジェクトを作成
-//             const signInActionData: SignInActionState = {
-//               isSignedIn: true,
-//               uid: user.uid,
-//               username: data.username,
-//               role: data.role,
-//             };
-//             // stateを更新
-//             dispatch(signInAction(signInActionData));
-//           });
-//       } else {
-//         window.location.href = "/";
-//       }
-//     });
-//   };
-// };
-
-/** ==============
- * Sign in
- =============== */
-// export const signIn = (email: string, password: string) => {
-//   return async (dispatch: AppDispatch): Promise<boolean | void> => {
-//     if (!isValidRequiredInput(email, password)) {
-//       alert("メールアドレスまたはパスワードが正しくありません。");
-//       return false;
-//     }
-//     auth.signInWithEmailAndPassword(email, password).then((res) => {
-//       const user = res.user;
-//       if (user) {
-//         const uid = user.uid;
-//         const timestamp = FirebaseTimestamp.now();
-//         db.collection("users")
-//           .doc(uid)
-//           .get()
-//           .then(async (snapshot) => {
-//             const data = snapshot.data();
-//             if (!data) {
-//               throw new Error("ユーザーデータが存在しません。");
-//             }
-//             const signInUserData: SignInUserState = {
-//               uid: uid,
-//               username: data.username,
-//               email: data.email,
-//               role: data.role,
-//               updated_at: timestamp.toDate().toString(),
-//             };
-//             await dispatch(signInAction(signInUserData));
-//             alert("ログインに成功しました。");
-//             window.location.href = "/home";
-//           });
-//       }
-//     });
-//   };
-// };
