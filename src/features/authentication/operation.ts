@@ -1,31 +1,27 @@
-/** 関数一覧
- * 認証状態を取得
- * 認証メールを送信
- * サインアップ
- * ログイン
- * ログアウト
- * パスワードリセット
- */
-
 import { AppDispatch } from "../../app/store";
 import { auth, db, FirebaseTimestamp } from "../../firebaseConfig";
 import { isValidRequiredInput, isValidEmailtFormat } from "../../functions/common";
 import { logoutAction } from "./authenticationSlice";
 import { setLoggingInState, sendEmailVerification } from "./util";
 import { LoginUserData } from "./types";
+import { showLoadingAction, hideLoadingAction } from "../notification/notificationSlice";
 
 // ===================================================================
-// 現在のログイン状態を取得し、
-// その状態に応じてログインが必要なサービスの利用を許可するか・しないか決定する
+// ユーザーの認証状態に応じてサービスの利用を制限する関数
+// (「ログイン中 & メールアドレス認証済み」かどうかチェックする)
 export const listenAuthState = () => {
-  return async (dispatch: AppDispatch): Promise<void> => {
+  return async (dispatch: AppDispatch): Promise<void | boolean> => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // ログイン中のユーザー情報をstateにセットする（全てのサービスが利用できる）
-        const uid = user.uid;
-        dispatch(setLoggingInState(uid));
+        if (user.emailVerified) {
+          const uid = user.uid;
+          // ユーザー情報をStoreにセットする（全てのサービスが利用できるようになる）
+          dispatch(setLoggingInState(uid));
+        } else {
+          window.location.href = "/authentication/email/send";
+        }
       } else {
-        // ホーム画面に強制的に遷移させる（ログインが必要なサービスは利用できない）
+        // ホーム画面に強制遷移させる（サービスは利用できない）
         window.location.href = "/";
       }
     });
@@ -34,99 +30,111 @@ export const listenAuthState = () => {
 
 // ===================================================================
 // サインアップ
-export const signUp = async (username: string, email: string, password: string): Promise<boolean | void> => {
-  // 入力値のチェック
-  if (!isValidRequiredInput(username, email, password)) {
-    alert("未入力の項目があります。");
-    return false;
-  }
-  if (!isValidEmailtFormat(email)) {
-    alert("メールアドレスの形式が正しくありません。");
-    return false;
-  }
-  if (password.length < 8) {
-    alert("パスワードは８文字以上で設定してください。"); // TODO:半角英数字も含むバリデーションを設置する
-    return false;
-  }
-  // メールアドレスの登録状況の確認
-  const isUsedEmail = await auth.fetchSignInMethodsForEmail(email).then((res) => res.length);
-  if (isUsedEmail > 0) {
-    alert("既に使用されているメールアドレスです。恐れ入りますが、別のメールアドレスをご利用ください。");
-    return false;
-  }
+export const signUp = (inputUsername: string, inputEmail: string, inputPassword: string) => {
+  return async (dispatch: AppDispatch): Promise<boolean | void> => {
+    // Validations
+    if (!isValidRequiredInput(inputUsername, inputEmail, inputPassword)) {
+      alert("未入力の項目があります。");
+      return false;
+    }
+    if (!isValidEmailtFormat(inputEmail)) {
+      alert("メールアドレスの形式が正しくありません。");
+      return false;
+    }
+    if (inputPassword.length < 8) {
+      alert("パスワードは８文字以上で設定してください。"); // TODO:半角英数字も含むバリデーションを設置する
+      return false;
+    }
+    const isAlreadyUsedEmail = await auth.fetchSignInMethodsForEmail(inputEmail).then((res) => res.length);
+    if (isAlreadyUsedEmail > 0) {
+      alert("既に使用されているメールアドレスです。恐れ入りますが、別のメールアドレスをご利用ください。");
+      return false;
+    }
 
-  auth
-    .createUserWithEmailAndPassword(email, password)
-    .then((result) => {
-      // アカウントの作成に成功
-      const currentUser = result.user;
-      if (currentUser) {
-        // 認証メールを送信
-        sendEmailVerification().then(() => {
-          const uid = currentUser.uid;
-          const userRef = db.collection("users").doc(uid);
+    dispatch(showLoadingAction("アカウント作成中..."));
+    // アカウントの作成処理
+    auth
+      .createUserWithEmailAndPassword(inputEmail, inputPassword)
+      .then((result) => {
+        // アカウントの作成に成功
+        const currentUser = result.user;
+        if (currentUser) {
+          // 認証メールを送信
+          sendEmailVerification().then(() => {
+            const uid = currentUser.uid;
+            const userRef = db.collection("users").doc(uid);
 
-          // firestoreに新規ユーザーデータを登録
-          // （1度でも認証メールを送信している場合はユーザーデータが作成されているため、この処理は実行されない）
-          userRef
-            .get()
-            .then((doc) => {
-              // doc(uid)が存在しない場合
-              if (!doc.exists) {
-                const timestamp = FirebaseTimestamp.now();
-                // ユーザーデータを作成
-                const userData: LoginUserData = {
-                  uid: uid,
-                  username: username,
-                  email: email,
-                  role: "user",
-                  created_at: timestamp,
-                  updated_at: timestamp,
-                };
-                userRef.set(userData).then(() => {
-                  // この時点ではメールアドレスの所有権が確認されていないため、
-                  // 強制的にサインアウトさせる（サービスの利用はできない）
-                  auth.signOut();
-                });
-              }
-            })
-            .catch((error) => {
-              // doc取得の処理でエラー
-              console.log("Firebase Error errorCode: ", error.code);
-              console.log("Firebase Error errorMessage: ", error.message);
-              alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
-            });
-        });
-      }
-    })
-    .catch((error) => {
-      // アカウント作成の処理でエラー
-      console.log("Firebase Error errorCode: ", error.code);
-      console.log("Firebase Error errorMessage: ", error.message);
-      alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
-    });
+            // Firestoreに新規ユーザーデータを登録
+            userRef
+              .get()
+              .then((doc) => {
+                if (!doc.exists) {
+                  const timestamp = FirebaseTimestamp.now();
+                  const userData: LoginUserData = {
+                    uid: uid,
+                    username: inputUsername,
+                    email: inputEmail,
+                    role: "user",
+                    created_at: timestamp,
+                    updated_at: timestamp,
+                  };
+                  userRef.set(userData).then(() => {
+                    dispatch(hideLoadingAction());
+                    window.location.href = "/authentication/email/sent";
+                  });
+                }
+              })
+              .catch((error) => {
+                // docの取得に失敗
+                dispatch(hideLoadingAction());
+                console.log("Firebase Error errorCode: ", error.code);
+                console.log("Firebase Error errorMessage: ", error.message);
+                alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
+              });
+          });
+        }
+      })
+      .catch((error) => {
+        // アカウントの作成に失敗
+        dispatch(hideLoadingAction());
+        console.log("Firebase Error errorCode: ", error.code);
+        console.log("Firebase Error errorMessage: ", error.message);
+        alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
+      });
+  };
 };
 
 // ===================================================================
 // ログイン
-export const login = (email: string, password: string) => {
+export const login = (inputEmail: string, inputPassword: string) => {
   return async (dispatch: AppDispatch): Promise<boolean | void> => {
-    if (!isValidRequiredInput(email, password)) {
+    dispatch(showLoadingAction("ログイン中..."));
+    if (!isValidRequiredInput(inputEmail, inputPassword)) {
+      dispatch(hideLoadingAction());
       alert("メールアドレスまたはパスワードが正しくありません。");
       return false;
     }
-    auth.signInWithEmailAndPassword(email, password).then(async (res) => {
-      const user = res.user;
-      if (user && user.emailVerified) {
-        const uid = user.uid;
-        await dispatch(setLoggingInState(uid));
-        window.location.href = "/home";
-        alert("ログインに成功しました");
-      } else {
-        // メールアドレスの認証が済んでいない場合は認証ページへ遷移させる
-        window.location.href = "/authentication/email";
-      }
-    });
+    auth
+      .signInWithEmailAndPassword(inputEmail, inputPassword)
+      .then(async (res) => {
+        const user = res.user;
+        if (user && user.emailVerified) {
+          const uid = user.uid;
+          await dispatch(setLoggingInState(uid));
+          dispatch(hideLoadingAction());
+          window.location.href = "/main";
+          alert("ログインに成功しました");
+        } else {
+          dispatch(hideLoadingAction());
+          // メールアドレスが未認証の場合は認証メール送信画面へ遷移させる
+          window.location.href = "/authentication/email/send";
+        }
+      })
+      .catch((error) => {
+        dispatch(hideLoadingAction());
+        console.log(error);
+        alert("メールアドレスまたはパスワードが正しくありません。");
+      });
   };
 };
 
@@ -149,16 +157,16 @@ export const logout = () => {
 
 // ===================================================================
 // パスワードリセット
-export const resetPassword = (email: string) => {
+export const resetPassword = (inputEmail: string) => {
   return async (): Promise<boolean | void> => {
-    if (!isValidEmailtFormat(email)) {
+    if (!isValidEmailtFormat(inputEmail)) {
       alert("メールアドレスが正しくありません。");
       return false;
     }
     await auth
-      .sendPasswordResetEmail(email)
+      .sendPasswordResetEmail(inputEmail)
       .then(() => {
-        alert("ご指定のメールアドレスにパスワードリセットのメールを送信しました。");
+        alert("ご指定のメールアドレスにパスワードのリセットメールを送信しました。");
       })
       .catch((error) => {
         alert("登録されていないメールアドレスです。ご確認の上、再度お試しください。");

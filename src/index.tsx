@@ -8,42 +8,36 @@ import { Route, Switch, BrowserRouter } from "react-router-dom";
 
 // import react components
 import Auth from "./Auth";
+import Loading from "./components/UIKit/loading/Loading";
 import App from "./App";
-// import {
-//   EmailSignUp,
-//   Login,
-//   ResetPassword,
-//   Home,
-//   Memo,
-//   EmailRegistration,
-//   EmailAuthentication,
-// } from "./components/pages";
 import SignUp from "./components/signup/SignUp";
 import EmailSignUp from "./components/signup/EmailSignUp";
 import Login from "./components/login/Login";
-import PasswordReset from "./components/password_reset/PasswordReset";
-import Home from "./components/home/Home";
+import PasswordReset from "./components/passwordReset/PasswordReset";
+import Main from "./components/main/Main";
 import Memo from "./components/memo/Memo";
-import EmailAuthentication from "./components/email_authentication/EmailAuthentication";
-import EmailRegistration from "./components/email_registration/EmailRegistration";
+import SendEmailAuthentication from "./components/emailAuthentication/SendEmailAuthentication";
+import SentEmailAuthentication from "./components/emailAuthentication/SentEmailAuthentication";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <Switch>
-          <Route exact path="/" component={App} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/signup" component={SignUp} />
-          <Route exact path="/signup/email" component={EmailSignUp} />
-          <Route exact path="/password/reset" component={PasswordReset} />
-          <Route exact path="/authentication/email" component={EmailAuthentication} />
-          <Auth>
-            <Route exact path="/signup/email/registration" component={EmailRegistration} />
-            <Route exact path="/home" component={Home} />
-            <Route exact path="/memo" component={Memo} />
-          </Auth>
-        </Switch>
+        <Loading>
+          <Switch>
+            <Route exact path="/" component={App} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/signup/email" component={EmailSignUp} />
+            <Route exact path="/password/reset" component={PasswordReset} />
+            <Route exact path="/authentication/email/send" component={SendEmailAuthentication} />
+            <Route exact path="/authentication/email/sent" component={SentEmailAuthentication} />
+            <Auth>
+              <Route exact path="/main" component={Main} />
+              <Route exact path="/memo" component={Memo} />
+            </Auth>
+          </Switch>
+        </Loading>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,

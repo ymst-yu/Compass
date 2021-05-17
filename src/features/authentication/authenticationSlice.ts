@@ -38,7 +38,7 @@ export const authenticationSlice = createSlice({
 export const { loginAction, logoutAction } = authenticationSlice.actions;
 
 // Selectors
-export const selectIsSignedIn = (state: RootState): InitialState["isSignedIn"] => state.user.isSignedIn;
-export const selectUid = (state: RootState): InitialState["uid"] => state.user.uid;
+export const selectIsSignedIn = (state: RootState): InitialState["isSignedIn"] => state.authentication.isSignedIn;
+export const selectUid = (state: RootState): InitialState["uid"] => state.authentication.uid;
 
 export default authenticationSlice.reducer;

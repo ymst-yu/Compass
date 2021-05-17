@@ -1,62 +1,19 @@
-import React, { useState, useCallback } from "react";
-import { generateNowDateString } from "../../functions/common";
-import { NowDate, CountDownTimer } from "../UIKit";
+import React from "react";
+import { NowDate } from "../UIKit";
 import MemoTitle from "./memoTitle/MemoTitle";
-import MemoTextArea from "./memoTextArea/MemoTextArea";
-
-interface MemoState {
-  id: string;
-  title: string;
-  texts: {
-    id: string;
-    text: string;
-  }[];
-  created_at: string;
-}
+import MemoTextContainer from "./memoTextContainer/MemoTextContainer";
+import MemoTimer from "./memoTimer/MemoTimer";
+import MemoModal from "./memoModal/MemoModal";
 
 const Memo: React.FC = () => {
-  const [values, setValues] = useState<MemoState>({
-    id: "",
-    title: "",
-    texts: [],
-    created_at: generateNowDateString(),
-  });
-
-  const handleChange = useCallback(
-    (prop: keyof MemoState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: e.target.value });
-    },
-    [values]
-  );
-
-  // const combineText = useCallback(() => {
-  //   const id = generateRandomString();
-  //   const newText = {
-  //     id: id,
-  //     text: inputText,
-  //   };
-  //   if (inputTexts[0].id === "") {
-  //     setInputTexts([newText]);
-  //   } else {
-  //     setInputTexts([...inputTexts, newText]);
-  //   }
-  // }, [inputText, inputTexts, setInputTexts]);
-
-  // const handleSubmit = useCallback(
-  //   (e: React.MouseEvent<HTMLButtonElement>) => {
-  //     e.preventDefault();
-  //     const sendData = {
-  //       id: generateRandomString(),
-  //       title: inputTitle,
-  //       texts: inputTexts,
-  //       tags: ["business", "money", "health"], // 選択したタグが格納されるように機能追加する
-  //     };
-  //     createMemo(sendData);
-  //     setInputTexts([]);
-  //     console.log("data: ", sendData);
-  //   },
-  //   [inputTexts, inputTitle]
-  // );
+  // メモの登録機能
+  // 2つのモーダル(または画面の一部を切り替えるパターン)で処理する場合
+  // 1つ目の画面
+  // ・保存する  => Firestoreに登録　=> 2つ目の画面を表示
+  // ・保存しない =>　2つ目の画面を表示
+  // 2つ目の画面
+  // ・続ける    =>　ページをリロードさせる
+  // ・終了する  =>　mainに遷移させる
 
   return (
     <div>
@@ -64,13 +21,16 @@ const Memo: React.FC = () => {
         <NowDate />
       </div>
       <div>
-        <CountDownTimer />
+        <MemoTimer />
       </div>
       <div>
         <MemoTitle />
       </div>
       <div>
-        <MemoTextArea />
+        <MemoTextContainer />
+      </div>
+      <div>
+        <MemoModal />
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EmailAuthentication: React.FC = () => {
+const SendEmailAuthentication: React.FC = () => {
   const classes = useStyles();
 
   const handleSubmit = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
@@ -52,7 +52,10 @@ const EmailAuthentication: React.FC = () => {
           <Typography component="h1" variant="h5">
             メールアドレスが認証されていません
           </Typography>
-          <Typography component="p" variant="body2" color="textSecondary">
+          <Typography component="p" variant="body2">
+            サービスをご利用いただくにはメールアドレスの認証が必要です。
+          </Typography>
+          <Typography component="p" variant="body2">
             お手数ですが、以下より認証メールを送信し認証を行ってください。
           </Typography>
           <form className={classes.form} noValidate>
@@ -74,4 +77,4 @@ const EmailAuthentication: React.FC = () => {
   );
 };
 
-export default EmailAuthentication;
+export default SendEmailAuthentication;
