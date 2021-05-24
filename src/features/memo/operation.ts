@@ -53,7 +53,7 @@ export const fetchAllMemos = (uid: string) => {
     // toolkitで扱える形に整形
     const memoList = snapshots.docs.map((doc) => ({
       id: doc.id,
-      created_at: doc.data().created_at.toDate().toString(),
+      created_at: doc.data().created_at,
       title: doc.data().title,
       texts: doc.data().texts,
       tags: doc.data().tags,
