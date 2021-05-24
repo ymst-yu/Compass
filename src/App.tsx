@@ -14,7 +14,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Copyright } from "./components";
+import { Copyright } from "./components/UIKit";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -69,8 +69,10 @@ const App: React.FC = () => {
         {/* Hero unit */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              Album layout
+            <Typography component="h1" variant="h5" align="center" color="textPrimary" gutterBottom>
+              　まだエンジンのかかっていない脳に、
+              <br />
+              活を入れる。
             </Typography>
             <Typography variant="h5" align="center" color="textSecondary" paragraph>
               Something short and leading about the collection below—its contents, the creator, etc. Make it short and

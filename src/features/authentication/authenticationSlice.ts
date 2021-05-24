@@ -1,17 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import { InitialState } from "./types";
 
-export interface UserInitialState {
-  isSignedIn: boolean;
-  uid: string;
-  username: string;
-  email: string;
-  role: string;
-  created_at: string;
-  updated_at: string;
-}
-
-const initialState: UserInitialState = {
+const initialState: InitialState = {
   isSignedIn: false,
   uid: "",
   username: "",
@@ -21,6 +12,7 @@ const initialState: UserInitialState = {
   updated_at: "",
 };
 
+// Slice
 export const authenticationSlice = createSlice({
   name: "authentication",
   initialState,
@@ -34,7 +26,7 @@ export const authenticationSlice = createSlice({
       state.created_at = action.payload.created_at;
       state.updated_at = action.payload.updated_at;
     },
-    signOutAction: () => {
+    logoutAction: () => {
       return {
         ...initialState,
       };
@@ -42,8 +34,11 @@ export const authenticationSlice = createSlice({
   },
 });
 
-export const { loginAction, signOutAction } = authenticationSlice.actions;
+// Actions
+export const { loginAction, logoutAction } = authenticationSlice.actions;
 
-export const selectIsSignedIn = (state: RootState): UserInitialState["isSignedIn"] => state.user.isSignedIn;
+// Selectors
+export const selectIsSignedIn = (state: RootState): InitialState["isSignedIn"] => state.authentication.isSignedIn;
+export const selectUid = (state: RootState): InitialState["uid"] => state.authentication.uid;
 
 export default authenticationSlice.reducer;

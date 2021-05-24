@@ -1,2 +1,2 @@
 export { default as Copyright } from "./copyright/Copyright";
-export { default as Home } from "./home/Home";
+export { default as NowDate } from "./nowDate/NowDate";
