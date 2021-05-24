@@ -1,5 +1,7 @@
 export interface InitialState {
-  isAlert: boolean;
+  alert: {
+    state: boolean;
+  };
   loading: {
     state: boolean;
     text: string;

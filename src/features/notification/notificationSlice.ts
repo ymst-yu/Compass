@@ -3,7 +3,9 @@ import { RootState } from "../../app/store";
 import { InitialState } from "./types";
 
 const initialState: InitialState = {
-  isAlert: false,
+  alert: {
+    state: false,
+  },
   loading: {
     state: false,
     text: "",
@@ -14,8 +16,9 @@ export const notificationSlice = createSlice({
   name: "notification",
   initialState,
   reducers: {
-    showAlertAction: (state, action) => {},
-    hideAlertAction: (state, action) => {},
+    showAlertAction: (state) => {
+      state.alert.state = true;
+    },
     showLoadingAction: (state, action) => {
       state.loading.state = true;
       state.loading.text = action.payload;
@@ -28,10 +31,10 @@ export const notificationSlice = createSlice({
 });
 
 // Actions
-export const { showLoadingAction, hideLoadingAction } = notificationSlice.actions;
+export const { showAlertAction, showLoadingAction, hideLoadingAction } = notificationSlice.actions;
 
 // Selectors
-export const selectIsAlert = (state: RootState): InitialState["isAlert"] => state.notification.isAlert;
+export const selectAlert = (state: RootState): InitialState["alert"] => state.notification.alert;
 export const selectLoading = (state: RootState): InitialState["loading"] => state.notification.loading;
 
 export default notificationSlice.reducer;

@@ -24,7 +24,7 @@ const initialState: InitialState = {
   },
   countDownTimer: {
     isStart: false,
-    count: 60,
+    count: 10,
   },
   isOpenSelectTagMenu: false,
   isOpenCreateTagMenu: false,
@@ -37,6 +37,9 @@ export const memoSlice = createSlice({
   reducers: {
     setMemoList: (state, action) => {
       state.list = action.payload;
+    },
+    setCreatedAt: (state, action) => {
+      state.memo.created_at = action.payload;
     },
     setTitle: (state, action) => {
       state.memo.title = action.payload;
@@ -63,7 +66,8 @@ export const memoSlice = createSlice({
 });
 
 // Actions
-export const { setMemoList, setTitle, setText, startTimer, countDown, resetCount, handleModalOpen } = memoSlice.actions;
+export const { setMemoList, setCreatedAt, setTitle, setText, startTimer, countDown, resetCount, handleModalOpen } =
+  memoSlice.actions;
 
 // Selectors
 export const selectMemos = (state: RootState): InitialState["list"] => state.memo.list;
