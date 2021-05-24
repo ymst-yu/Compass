@@ -2,6 +2,7 @@ import { auth, db } from "../../firebaseConfig";
 import { AppDispatch } from "../../app/store";
 import { startTimer, countDown, resetCount, setMemoList, handleModalOpen } from "./memoSlice";
 import { MemoType } from "./types";
+import { toast } from "react-toastify";
 
 /**
  * カウントダウンタイマー
@@ -74,19 +75,21 @@ export const fetchAllMemos = (uid: string) => {
 // 3) createMemoでは、firestoreに登録する
 // 4) memoSliceのfetchAllMemosで作成したメモを取得し、storeに保存する
 // 5) コンポーネント側でメモを呼び出すときはstoreから取得する
-export const saveMemo = async (memo: MemoType): Promise<void> => {
-  const currentUser = await auth.currentUser;
-  if (currentUser) {
-    const uid = currentUser.uid;
-    db.collection("users")
-      .doc(uid)
-      .collection("memo")
-      .doc()
-      .set(memo)
-      .then(() => {
-        alert("メモが保存されました。");
-      });
-  }
+export const saveMemo = (memo: MemoType) => {
+  return async (): Promise<void> => {
+    const currentUser = await auth.currentUser;
+    if (currentUser) {
+      const uid = currentUser.uid;
+      db.collection("users")
+        .doc(uid)
+        .collection("memos")
+        .doc()
+        .set(memo)
+        .then(() => {
+          toast.success("メモが保存されました。");
+        });
+    }
+  };
 };
 
 /** ================

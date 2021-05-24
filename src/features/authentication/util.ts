@@ -2,6 +2,7 @@ import { auth, db, FirebaseTimestamp } from "../../firebaseConfig";
 import { AppDispatch } from "../../app/store";
 import { InitialState } from "./types";
 import { loginAction } from "./authenticationSlice";
+import { toast } from "react-toastify";
 
 // ==================================================================
 // ログイン時間の更新 & ログイン中のユーザーデータをStoreにセットする関数
@@ -45,7 +46,7 @@ export const setLoggingInState = (uid: string) => {
 
 // ==================================================================
 // 認証メールを送信する関数
-export const sendEmailVerification = async (): Promise<void> => {
+export const sendEmailVerification = async () => {
   const currentUser = await auth.currentUser;
   if (currentUser) {
     // メールに記載のリンクURLをログインページに設定
@@ -59,7 +60,7 @@ export const sendEmailVerification = async (): Promise<void> => {
       .sendEmailVerification(actionCodeSettings)
       .then(() => {
         // 送信成功
-        alert("認証メールを送信しました。");
+        toast.success("認証メールを送信しました。");
       })
       .catch((error) => {
         // 送信失敗

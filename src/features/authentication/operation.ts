@@ -4,7 +4,8 @@ import { isValidRequiredInput, isValidEmailtFormat } from "../../functions/commo
 import { logoutAction } from "./authenticationSlice";
 import { setLoggingInState, sendEmailVerification } from "./util";
 import { LoginUserData } from "./types";
-import { showLoadingAction, hideLoadingAction } from "../notification/notificationSlice";
+import { showAlertAction, showLoadingAction, hideLoadingAction } from "../notification/notificationSlice";
+import { toast } from "react-toastify";
 
 // ===================================================================
 // ユーザーの認証状態に応じてサービスの利用を制限する関数
@@ -31,7 +32,7 @@ export const listenAuthState = () => {
 // ===================================================================
 // サインアップ
 export const signUp = (inputUsername: string, inputEmail: string, inputPassword: string) => {
-  return async (dispatch: AppDispatch): Promise<boolean | void> => {
+  return async (dispatch: AppDispatch): Promise<void | boolean> => {
     // Validations
     if (!isValidRequiredInput(inputUsername, inputEmail, inputPassword)) {
       alert("未入力の項目があります。");
@@ -51,7 +52,6 @@ export const signUp = (inputUsername: string, inputEmail: string, inputPassword:
       return false;
     }
 
-    dispatch(showLoadingAction("アカウント作成中..."));
     // アカウントの作成処理
     auth
       .createUserWithEmailAndPassword(inputEmail, inputPassword)
@@ -79,14 +79,12 @@ export const signUp = (inputUsername: string, inputEmail: string, inputPassword:
                     updated_at: timestamp,
                   };
                   userRef.set(userData).then(() => {
-                    dispatch(hideLoadingAction());
                     window.location.href = "/authentication/email/sent";
                   });
                 }
               })
               .catch((error) => {
                 // docの取得に失敗
-                dispatch(hideLoadingAction());
                 console.log("Firebase Error errorCode: ", error.code);
                 console.log("Firebase Error errorMessage: ", error.message);
                 alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
@@ -96,7 +94,6 @@ export const signUp = (inputUsername: string, inputEmail: string, inputPassword:
       })
       .catch((error) => {
         // アカウントの作成に失敗
-        dispatch(hideLoadingAction());
         console.log("Firebase Error errorCode: ", error.code);
         console.log("Firebase Error errorMessage: ", error.message);
         alert("処理中にエラーが発生しました。恐れ入りますが、お時間をおいてから再度お試しください。");
@@ -108,7 +105,7 @@ export const signUp = (inputUsername: string, inputEmail: string, inputPassword:
 // ログイン
 export const login = (inputEmail: string, inputPassword: string) => {
   return async (dispatch: AppDispatch): Promise<boolean | void> => {
-    dispatch(showLoadingAction("ログイン中..."));
+    dispatch(showLoadingAction("ログイン中"));
     if (!isValidRequiredInput(inputEmail, inputPassword)) {
       dispatch(hideLoadingAction());
       alert("メールアドレスまたはパスワードが正しくありません。");
@@ -122,8 +119,8 @@ export const login = (inputEmail: string, inputPassword: string) => {
           const uid = user.uid;
           await dispatch(setLoggingInState(uid));
           dispatch(hideLoadingAction());
+          dispatch(showAlertAction());
           window.location.href = "/main";
-          alert("ログインに成功しました");
         } else {
           dispatch(hideLoadingAction());
           // メールアドレスが未認証の場合は認証メール送信画面へ遷移させる
@@ -147,6 +144,7 @@ export const logout = () => {
       .then(async () => {
         await dispatch(logoutAction());
         alert("ログアウトしました。");
+        // window.location.href = "/logout"
       })
       .catch((error) => {
         alert("ログアウトに失敗しました。");

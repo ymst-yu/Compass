@@ -13,7 +13,7 @@ const MemoTimer: React.FC = () => {
 
   useEffect(() => {
     if (isStart) {
-      dispatch(countDownTimer(60));
+      dispatch(countDownTimer(10));
     }
   }, [isStart, dispatch]);
 

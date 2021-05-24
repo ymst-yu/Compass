@@ -9,6 +9,7 @@ import { Route, Switch, BrowserRouter } from "react-router-dom";
 // import react components
 import Auth from "./Auth";
 import Loading from "./components/UIKit/loading/Loading";
+import Alert from "./components/UIKit/alert/Alert";
 import App from "./App";
 import SignUp from "./components/signup/SignUp";
 import EmailSignUp from "./components/signup/EmailSignUp";
@@ -23,6 +24,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
+        <Alert />
         <Loading>
           <Switch>
             <Route exact path="/" component={App} />
