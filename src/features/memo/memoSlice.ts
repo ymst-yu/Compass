@@ -11,6 +11,7 @@ interface InitialState {
   };
   isOpenSelectTagMenu: boolean;
   isOpenCreateTagMenu: boolean;
+  isModalOpen: boolean;
 }
 
 const initialState: InitialState = {
@@ -23,10 +24,11 @@ const initialState: InitialState = {
   },
   countDownTimer: {
     isStart: false,
-    count: 60,
+    count: 10,
   },
   isOpenSelectTagMenu: false,
   isOpenCreateTagMenu: false,
+  isModalOpen: false,
 };
 
 export const memoSlice = createSlice({
@@ -35,6 +37,9 @@ export const memoSlice = createSlice({
   reducers: {
     setMemoList: (state, action) => {
       state.list = action.payload;
+    },
+    setCreatedAt: (state, action) => {
+      state.memo.created_at = action.payload;
     },
     setTitle: (state, action) => {
       state.memo.title = action.payload;
@@ -51,6 +56,9 @@ export const memoSlice = createSlice({
     resetCount: (state, action) => {
       state.countDownTimer.count = action.payload;
     },
+    handleModalOpen: (state, action) => {
+      state.isModalOpen = action.payload;
+    },
     // handleTimerStart
     // handleTagMenuOpen
     // handleCreateTagMenuOpen
@@ -58,11 +66,13 @@ export const memoSlice = createSlice({
 });
 
 // Actions
-export const { setMemoList, setTitle, setText, startTimer, countDown, resetCount } = memoSlice.actions;
+export const { setMemoList, setCreatedAt, setTitle, setText, startTimer, countDown, resetCount, handleModalOpen } =
+  memoSlice.actions;
 
 // Selectors
 export const selectMemos = (state: RootState): InitialState["list"] => state.memo.list;
 export const selectMemo = (state: RootState): InitialState["memo"] => state.memo.memo;
+export const selectModal = (state: RootState): InitialState["isModalOpen"] => state.memo.isModalOpen;
 export const selectCountDownTimer = (state: RootState): InitialState["countDownTimer"] => state.memo.countDownTimer;
 
 export default memoSlice.reducer;

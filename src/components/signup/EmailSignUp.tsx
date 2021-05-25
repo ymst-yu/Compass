@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../app/store";
 import { Copyright } from "../UIKit";
 import { signUp } from "../../features/authentication/operation";
 
@@ -21,6 +23,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
+import Alert from "@material-ui/lab/Alert";
 
 interface UserInput {
   username: string;
@@ -51,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SignUp: React.FC = () => {
   const classes = useStyles();
-
+  const dispatch: AppDispatch = useDispatch();
   // state
   const [values, setValues] = useState<UserInput>({
     username: "",
@@ -72,7 +76,7 @@ const SignUp: React.FC = () => {
   const handleSubmit = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
       e.preventDefault();
-      signUp(values.username, values.email, values.password);
+      dispatch(signUp(values.username, values.email, values.password));
     },
     [values.username, values.email, values.password]
   );
@@ -89,10 +93,10 @@ const SignUp: React.FC = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          アカウントの作成
+          アカウント作成
         </Typography>
         <Typography component="p" variant="body2" color="textSecondary">
-          アカウントはメールアドレスの認証完了後に作成されます。
+          本サービスはメールアドレス認証後にご利用いただけます
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -176,6 +180,9 @@ const SignUp: React.FC = () => {
       <Box mt={5}>
         <Copyright />
       </Box>
+      {/* stateで表示・非表示を切り替える
+      <Alert severity="success">認証メールを送信しました。</Alert>
+       */}
     </Container>
   );
 };

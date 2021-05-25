@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../app/store";
 import { selectCountDownTimer, selectMemo, setText } from "../../../features/memo/memoSlice";
 import { generateRandomString } from "../../../functions/common";
 
-const MemoTextArea: React.FC = () => {
+const MemoTextContainer: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const timer = useSelector(selectCountDownTimer);
   const memo = useSelector(selectMemo);
@@ -53,4 +53,4 @@ const MemoTextArea: React.FC = () => {
   );
 };
 
-export default MemoTextArea;
+export default MemoTextContainer;

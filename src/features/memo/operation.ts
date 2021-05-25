@@ -1,6 +1,8 @@
-import { db } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { AppDispatch } from "../../app/store";
-import { startTimer, countDown, resetCount, setMemoList } from "./memoSlice";
+import { startTimer, countDown, resetCount, setMemoList, handleModalOpen } from "./memoSlice";
+import { MemoType } from "./types";
+import { toast } from "react-toastify";
 
 /**
  * カウントダウンタイマー
@@ -9,7 +11,6 @@ import { startTimer, countDown, resetCount, setMemoList } from "./memoSlice";
  */
 export const countDownTimer = (initialSeconds: number) => {
   return async (dispatch: AppDispatch) => {
-    dispatch(startTimer(true));
     // 1回の処理で減少するカウント数（setInterval中に使用する）
     const decrementInterval = 1;
     // 現時刻
@@ -18,13 +19,16 @@ export const countDownTimer = (initialSeconds: number) => {
     const end = new Date(now.getTime() + initialSeconds * 1000);
 
     // タイマー本体
-    // 現時刻 >= 終了時刻 となったら停止する
+    // （現時刻 >= 終了時刻 となったら停止する）
     const counter = setInterval(() => {
       dispatch(countDown(decrementInterval));
       if (now.getTime() >= end.getTime()) {
         clearInterval(counter);
+        // タイマーを停止
         dispatch(startTimer(false));
-        alert("Time Up!");
+        // モーダルをオープン
+        dispatch(handleModalOpen(true));
+        // カウントを初期値に戻す
         dispatch(resetCount(initialSeconds));
       } else {
         now = new Date();
@@ -49,7 +53,7 @@ export const fetchAllMemos = (uid: string) => {
     // toolkitで扱える形に整形
     const memoList = snapshots.docs.map((doc) => ({
       id: doc.id,
-      created_at: doc.data().created_at.toDate().toString(),
+      created_at: doc.data().created_at,
       title: doc.data().title,
       texts: doc.data().texts,
       tags: doc.data().tags,
@@ -71,6 +75,22 @@ export const fetchAllMemos = (uid: string) => {
 // 3) createMemoでは、firestoreに登録する
 // 4) memoSliceのfetchAllMemosで作成したメモを取得し、storeに保存する
 // 5) コンポーネント側でメモを呼び出すときはstoreから取得する
+export const saveMemo = (memo: MemoType) => {
+  return async (): Promise<void> => {
+    const currentUser = await auth.currentUser;
+    if (currentUser) {
+      const uid = currentUser.uid;
+      db.collection("users")
+        .doc(uid)
+        .collection("memos")
+        .doc()
+        .set(memo)
+        .then(() => {
+          toast.success("メモが保存されました。");
+        });
+    }
+  };
+};
 
 /** ================
  * deleteMemo

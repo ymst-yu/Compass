@@ -35,7 +35,7 @@ const MemoTitle: React.FC = () => {
       ) : (
         <form className={styles.form} onSubmit={handleSubmit}>
           <TextField
-            label="タイトルを入力"
+            label="ここにタイトルを入力"
             variant="outlined"
             fullWidth
             margin="dense"

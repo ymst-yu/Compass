@@ -3,26 +3,27 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../../app/store";
 import { selectCountDownTimer } from "../../../features/memo/memoSlice";
 import { countDownTimer } from "../../../features/memo/operation";
-import styles from "./CountDownTimer.module.scss";
+import styles from "./MemoTimer.module.scss";
 
-const CountDownTimer: React.FC = () => {
+const MemoTimer: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const timer = useSelector(selectCountDownTimer);
+  const count = timer.count;
   const isStart = timer.isStart;
 
   useEffect(() => {
     if (isStart) {
-      dispatch(countDownTimer(60));
+      dispatch(countDownTimer(10));
     }
   }, [isStart, dispatch]);
 
   return (
     <div>
       <div>
-        残り: <span className={styles.count}>{timer.count}</span>秒
+        残り: <span className={styles.count}>{count}</span>秒
       </div>
     </div>
   );
 };
 
-export default CountDownTimer;
+export default MemoTimer;
