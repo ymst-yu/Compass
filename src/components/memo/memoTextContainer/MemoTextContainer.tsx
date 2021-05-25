@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/store";
 import { selectCountDownTimer, selectMemo, setText } from "../../../features/memo/memoSlice";
-import { generateRandomString } from "../../../functions/common";
+import { generateRandomString, isValidRequiredInput } from "../../../functions/common";
 
 const MemoTextContainer: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -24,6 +24,8 @@ const MemoTextContainer: React.FC = () => {
 
   const setTextToState = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isValidRequiredInput(inputText)) return false;
+
     const newText = {
       id: generateRandomString(),
       text: inputText,
