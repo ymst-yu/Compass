@@ -24,7 +24,7 @@ const initialState: InitialState = {
   },
   countDownTimer: {
     isStart: false,
-    count: 10,
+    count: 60,
   },
   isOpenSelectTagMenu: false,
   isOpenCreateTagMenu: false,
@@ -47,6 +47,37 @@ export const memoSlice = createSlice({
     setText: (state, action) => {
       state.memo.texts = [...state.memo.texts, action.payload];
     },
+    changeTextAttribute: (state, action) => {
+      const newTexts = state.memo.texts.map((text) => {
+        if (text.id === action.payload) {
+          return {
+            ...text,
+            editing: !text.editing,
+          };
+        } else {
+          return {
+            ...text,
+            editing: false,
+          };
+        }
+      });
+      state.memo.texts = newTexts;
+    },
+    updateText: (state, action) => {
+      const newTexts = state.memo.texts.map((text) => {
+        if (text.id === action.payload.id) {
+          return {
+            ...text,
+            text: action.payload.text,
+          };
+        } else {
+          return {
+            ...text,
+          };
+        }
+      });
+      state.memo.texts = newTexts;
+    },
     startTimer: (state, action) => {
       state.countDownTimer.isStart = action.payload;
     },
@@ -59,15 +90,24 @@ export const memoSlice = createSlice({
     handleModalOpen: (state, action) => {
       state.isModalOpen = action.payload;
     },
-    // handleTimerStart
     // handleTagMenuOpen
     // handleCreateTagMenuOpen
   },
 });
 
 // Actions
-export const { setMemoList, setCreatedAt, setTitle, setText, startTimer, countDown, resetCount, handleModalOpen } =
-  memoSlice.actions;
+export const {
+  setMemoList,
+  setCreatedAt,
+  setTitle,
+  setText,
+  updateText,
+  changeTextAttribute,
+  startTimer,
+  countDown,
+  resetCount,
+  handleModalOpen,
+} = memoSlice.actions;
 
 // Selectors
 export const selectMemos = (state: RootState): InitialState["list"] => state.memo.list;
