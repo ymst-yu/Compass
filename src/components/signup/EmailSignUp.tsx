@@ -24,8 +24,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
-import Alert from "@material-ui/lab/Alert";
-
 interface UserInput {
   username: string;
   email: string;
@@ -78,7 +76,7 @@ const SignUp: React.FC = () => {
       e.preventDefault();
       dispatch(signUp(values.username, values.email, values.password));
     },
-    [values.username, values.email, values.password]
+    [dispatch, values.username, values.email, values.password]
   );
   // パスワードの表示・非表示を切り替える
   const handleClickShowPassword = useCallback(() => {

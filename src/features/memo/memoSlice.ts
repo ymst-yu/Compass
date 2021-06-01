@@ -44,39 +44,8 @@ export const memoSlice = createSlice({
     setTitle: (state, action) => {
       state.memo.title = action.payload;
     },
-    setText: (state, action) => {
-      state.memo.texts = [...state.memo.texts, action.payload];
-    },
-    changeTextAttribute: (state, action) => {
-      const newTexts = state.memo.texts.map((text) => {
-        if (text.id === action.payload) {
-          return {
-            ...text,
-            editing: !text.editing,
-          };
-        } else {
-          return {
-            ...text,
-            editing: false,
-          };
-        }
-      });
-      state.memo.texts = newTexts;
-    },
-    updateText: (state, action) => {
-      const newTexts = state.memo.texts.map((text) => {
-        if (text.id === action.payload.id) {
-          return {
-            ...text,
-            text: action.payload.text,
-          };
-        } else {
-          return {
-            ...text,
-          };
-        }
-      });
-      state.memo.texts = newTexts;
+    setTexts: (state, action) => {
+      state.memo.texts = action.payload;
     },
     startTimer: (state, action) => {
       state.countDownTimer.isStart = action.payload;
@@ -96,18 +65,8 @@ export const memoSlice = createSlice({
 });
 
 // Actions
-export const {
-  setMemoList,
-  setCreatedAt,
-  setTitle,
-  setText,
-  updateText,
-  changeTextAttribute,
-  startTimer,
-  countDown,
-  resetCount,
-  handleModalOpen,
-} = memoSlice.actions;
+export const { setMemoList, setCreatedAt, setTitle, setTexts, startTimer, countDown, resetCount, handleModalOpen } =
+  memoSlice.actions;
 
 // Selectors
 export const selectMemos = (state: RootState): InitialState["list"] => state.memo.list;

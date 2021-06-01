@@ -1,14 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/store";
-import {
-  selectCountDownTimer,
-  selectMemo,
-  setText,
-  updateText,
-  changeTextAttribute,
-} from "../../../features/memo/memoSlice";
+import { selectCountDownTimer, selectMemo, setTexts } from "../../../features/memo/memoSlice";
 import { generateRandomString, isValidRequiredInput } from "../../../functions/common";
+
+type inputTextType = {
+  id: string;
+  editing: boolean;
+  text: string;
+};
 
 const MemoTextContainer: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -16,60 +16,93 @@ const MemoTextContainer: React.FC = () => {
   const memo = useSelector(selectMemo);
   const isStart = timer.isStart;
   const title = memo.title;
-  const texts = memo.texts;
 
   const [inputText, setInputText] = useState("");
+  const [inputTexts, setInputTexts] = useState<inputTextType[]>([]);
 
-  const handleChangeText = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!isStart) return;
-      setInputText(e.target.value);
-    },
-    [isStart]
-  );
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isStart) return false;
+
+    setInputText(e.target.value);
+  };
 
   const handleCreateText = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isValidRequiredInput(inputText)) return false;
 
-    const newText = {
+    const newText: inputTextType = {
       id: generateRandomString(),
       editing: false,
       text: inputText,
     };
 
-    dispatch(setText(newText));
+    setInputTexts([...inputTexts, newText]);
     setInputText("");
   };
 
   // テキストの編集状態を変更する
-  const handleChangeTextAttribute = (
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLLIElement>,
-    id: string
-  ) => {
-    e.preventDefault();
-    dispatch(changeTextAttribute(id));
+  const handleChangeTextAttribute = (id: string) => {
+    const newTexts = inputTexts.map((text) => {
+      if (text.id === id) {
+        return {
+          ...text,
+          editing: !text.editing,
+        };
+      } else {
+        return {
+          ...text,
+          editing: false,
+        };
+      }
+    });
+    setInputTexts(newTexts);
   };
 
   // テキストを更新する
-  const handleUpdateText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newText = {
-      id: e.target.id,
-      text: e.target.value,
-    };
-    dispatch(updateText(newText));
+  const handleEditText = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const newTexts = inputTexts.map((text) => {
+      if (text.id === id) {
+        return {
+          ...text,
+          text: e.target.value,
+        };
+      }
+      return text;
+    });
+    setInputTexts(newTexts);
   };
+
+  // 作成したデータ(inputTexts)を整形し、storeに保管
+  useEffect(() => {
+    if (timer.count === 0) {
+      // テキストが空のオブジェクトを除外
+      const texts = inputTexts.filter((text) => isValidRequiredInput(text.text));
+
+      // 全てのテキストの編集状態をfalseにする
+      const newTexts = texts.map((text) => {
+        if (text.editing) {
+          return {
+            ...text,
+            editing: false,
+          };
+        }
+        return text;
+      });
+
+      dispatch(setTexts(newTexts));
+    }
+  }, [dispatch, inputTexts, timer.count]);
 
   return (
     <div>
       {title && (
         <>
           <ul>
-            {texts.map((text) => (
-              <li key={text.id} onClick={(e) => handleChangeTextAttribute(e, text.id)}>
+            {inputTexts.map((text) => (
+              <li key={text.id} onClick={() => handleChangeTextAttribute(text.id)}>
                 {text.editing && isStart ? (
-                  <form onSubmit={(e) => handleChangeTextAttribute(e, text.id)}>
-                    <input id={text.id} type="text" value={text.text} onChange={handleUpdateText} autoFocus />
+                  <form onSubmit={() => handleChangeTextAttribute(text.id)}>
+                    <input type="text" value={text.text} onChange={(e) => handleEditText(e, text.id)} autoFocus />
                   </form>
                 ) : (
                   text.text
