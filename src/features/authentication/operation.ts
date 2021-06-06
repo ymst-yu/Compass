@@ -22,8 +22,8 @@ export const listenAuthState = () => {
           window.location.href = "/authentication/email/send";
         }
       } else {
-        // ホーム画面に強制遷移させる（サービスは利用できない）
-        window.location.href = "/";
+        // ログイン画面に強制遷移させる（サービスは利用できない）
+        window.location.href = "/login";
       }
     });
   };
@@ -143,8 +143,6 @@ export const logout = () => {
       .signOut()
       .then(async () => {
         await dispatch(logoutAction());
-        alert("ログアウトしました。");
-        // window.location.href = "/logout"
       })
       .catch((error) => {
         alert("ログアウトに失敗しました。");

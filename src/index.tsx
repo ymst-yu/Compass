@@ -14,6 +14,7 @@ import App from "./App";
 import SignUp from "./components/signup/SignUp";
 import EmailSignUp from "./components/signup/EmailSignUp";
 import Login from "./components/login/Login";
+import AfterLogout from "./components/logout/AfterLogout";
 import PasswordReset from "./components/passwordReset/PasswordReset";
 import Main from "./components/main/Main";
 import Memo from "./components/memo/Memo";
@@ -29,6 +30,7 @@ ReactDOM.render(
           <Switch>
             <Route exact path="/" component={App} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/logout" component={AfterLogout} />
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/signup/email" component={EmailSignUp} />
             <Route exact path="/password/reset" component={PasswordReset} />
