@@ -21,20 +21,8 @@ const Home: React.FC = () => {
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => dispatch(logout())}>Sign out</button>
+      <button onClick={() => dispatch(logout())}>ログアウト</button>
       <button onClick={() => history.push("/memo")}>メモ作成</button>
-      <ul>
-        {/* {list.map((memo) => (
-          <li key={memo.id}>
-            <h2>{memo.title}</h2>
-            <ul>
-              {memo.texts.map((text) => (
-                <li key={text.id}>{text.text}</li>
-              ))}
-            </ul>
-          </li>
-        ))} */}
-      </ul>
     </div>
   );
 };
