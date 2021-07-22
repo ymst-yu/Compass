@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/store";
-import { selectMemo, selectModal, handleModalOpen } from "../../../features/memo/memoSlice";
+import { selectCountDownTimer, selectMemo, selectModal } from "../../../features/memo/memoSlice";
 import { saveMemo } from "../../../features/memo/operation";
 
 import styles from "./MemoModal.module.scss";
@@ -41,11 +41,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const MemoModal: React.FC = () => {
+  const timer = useSelector(selectCountDownTimer);
   const isModalOpen = useSelector(selectModal);
+  const memo = useSelector(selectMemo);
+
   const dispatch: AppDispatch = useDispatch();
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
-  const memo = useSelector(selectMemo);
   const [modalStyle] = useState(getModalStyle);
   const [body, setBody] = useState(true);
 
@@ -53,6 +55,18 @@ const MemoModal: React.FC = () => {
     setBody(!body);
   };
 
+  const continueButton = () => {
+    window.onbeforeunload = null;
+    window.location.href = "/memo";
+  };
+
+  // const endButton = () => {
+  //   if(timer.isStart) {
+
+  //   }
+  // };
+
+  // body === true のときに表示する
   const body1: JSX.Element = (
     <div style={modalStyle} className={classes.paper}>
       <Typography component="h2" variant="h5" align="center">
@@ -82,6 +96,7 @@ const MemoModal: React.FC = () => {
     </div>
   );
 
+  // body === false のときに表示する
   const body2 = (
     <div style={modalStyle} className={classes.paper}>
       <Typography component="h2" variant="h5" align="center">
@@ -94,12 +109,12 @@ const MemoModal: React.FC = () => {
       <Box mb={3} />
       <Grid container justify="center" spacing={8}>
         <Grid item>
-          <Button variant="contained" color="primary">
+          <Button type="submit" variant="contained" color="primary" onClick={continueButton}>
             続ける
           </Button>
         </Grid>
         <Grid item>
-          <Button variant="contained" onClick={() => dispatch(handleModalOpen(false))}>
+          <Button variant="contained" onClick={() => (window.location.href = "/main")}>
             終了する
           </Button>
         </Grid>

@@ -105,7 +105,7 @@ export const signUp = (inputUsername: string, inputEmail: string, inputPassword:
 // ログイン
 export const login = (inputEmail: string, inputPassword: string) => {
   return async (dispatch: AppDispatch): Promise<boolean | void> => {
-    dispatch(showLoadingAction("ログイン中"));
+    dispatch(showLoadingAction("ログイン中..."));
     if (!isValidRequiredInput(inputEmail, inputPassword)) {
       dispatch(hideLoadingAction());
       alert("メールアドレスまたはパスワードが正しくありません。");

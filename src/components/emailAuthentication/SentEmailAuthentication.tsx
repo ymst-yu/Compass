@@ -57,10 +57,10 @@ const SentEmailAuthentication: React.FC = () => {
             サービスはメールアドレス認証後にご利用いただけます。
           </Typography>
           <Typography component="p" variant="body2" color="textSecondary">
-            認証メール記載のURLより認証をお願い致します。
+            メール記載のURLより認証をお願い致します。
           </Typography>
           <Typography component="p" variant="body2" color="textSecondary">
-            認証メールが届いていない場合には以下より再送信をお願いします。
+            メールが届いていない場合には以下より再送信をお願いします。
           </Typography>
           <form className={classes.form} noValidate>
             <div onClick={handleSubmit}>

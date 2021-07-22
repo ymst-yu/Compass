@@ -1,4 +1,5 @@
 export interface MemoType {
+  id: string;
   created_at: string;
   title: string;
   texts: {

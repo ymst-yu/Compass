@@ -13,14 +13,14 @@ const MemoTimer: React.FC = () => {
 
   useEffect(() => {
     if (isStart) {
-      dispatch(countDownTimer(60));
+      dispatch(countDownTimer(10));
     }
   }, [isStart, dispatch]);
 
   return (
     <div>
-      <div>
-        残り: <span className={styles.count}>{count}</span>秒
+      <div className={styles.count}>
+        残り: <span className={styles.count__seconds}>{count}</span>秒
       </div>
     </div>
   );
