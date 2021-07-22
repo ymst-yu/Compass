@@ -11,14 +11,14 @@ export const generateRandomString = () => {
 // 空文字が入力されていないかチェック
 export const isValidRequiredInput = (...args: string[]): boolean => {
   let validator = true;
+  // const regex = /\S/g;
   for (let i = 0; i < args.length; i += 1) {
-    if (args[i] === "") {
+    if (!args[i]) {
       validator = false;
     }
   }
   return validator;
 };
-
 /**
  * メールアドレスの形式チェック
  * @param email "ユーザーが入力したメールアドレス"

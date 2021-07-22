@@ -5,18 +5,18 @@ import { MemoType } from "./types";
 import { toast } from "react-toastify";
 
 /**
- * カウントダウンタイマー
- * @param initialSeconds
+ * == カウントダウンタイマー ==
+ * @param initialCount
  * @returns {void}
  */
-export const countDownTimer = (initialSeconds: number) => {
+export const countDownTimer = (initialCount: number) => {
   return async (dispatch: AppDispatch) => {
     // 1回の処理で減少するカウント数（setInterval中に使用する）
     const decrementInterval = 1;
     // 現時刻
     let now = new Date();
     // 終了時刻
-    const end = new Date(now.getTime() + initialSeconds * 1000);
+    const end = new Date(now.getTime() + initialCount * 1000);
 
     // タイマー本体
     // （現時刻 >= 終了時刻 となったら停止する）
@@ -29,7 +29,7 @@ export const countDownTimer = (initialSeconds: number) => {
         // モーダルをオープン
         dispatch(handleModalOpen(true));
         // カウントを初期値に戻す
-        dispatch(resetCount(initialSeconds));
+        dispatch(resetCount(initialCount));
       } else {
         now = new Date();
       }
@@ -38,7 +38,7 @@ export const countDownTimer = (initialSeconds: number) => {
 };
 
 /**
- * メモの全件取得
+ * == 全てのメモを取得 ==
  * (Firestoreからメモを全件取得し、storeに保管する)
  * @param uid (uidと一致するユーザーのメモを取得するため)
  * @returns {void}
@@ -66,15 +66,11 @@ export const fetchAllMemos = (uid: string) => {
   };
 };
 
-/** ================
- * createMemo
-================== */
-// メモ作成の流れ
-// 1) React側でタイトル、テキスト、日付をもったメモを作成
-// 2) dispatch(createMemo(obj(1で作成したメモ)))としてoperation関数に渡す
-// 3) createMemoでは、firestoreに登録する
-// 4) memoSliceのfetchAllMemosで作成したメモを取得し、storeに保存する
-// 5) コンポーネント側でメモを呼び出すときはstoreから取得する
+/**
+ * メモの保存(Firestoreに保存)
+ * @param memo (reduxから取得)
+ * @returns {void}
+ */
 export const saveMemo = (memo: MemoType) => {
   return async (): Promise<void> => {
     const currentUser = await auth.currentUser;
@@ -88,11 +84,8 @@ export const saveMemo = (memo: MemoType) => {
         .then(() => {
           toast.success("メモが保存されました。");
         });
+    } else {
+      toast.error("予期せぬエラーにより、メモの保存に失敗しました。");
     }
   };
 };
-
-/** ================
- * deleteMemo
-================== */
-// export const deleteMemo = () => {}

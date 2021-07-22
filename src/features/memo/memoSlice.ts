@@ -17,6 +17,7 @@ interface InitialState {
 const initialState: InitialState = {
   list: [],
   memo: {
+    id: "",
     created_at: "",
     title: "",
     texts: [],
@@ -24,7 +25,7 @@ const initialState: InitialState = {
   },
   countDownTimer: {
     isStart: false,
-    count: 60,
+    count: 10,
   },
   isOpenSelectTagMenu: false,
   isOpenCreateTagMenu: false,
